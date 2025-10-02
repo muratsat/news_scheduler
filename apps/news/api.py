@@ -1,7 +1,5 @@
 from typing import Literal
 
-from django.db.models import Q
-from django.utils import timezone
 from ninja import ModelSchema, Router
 
 from .models import Article
