@@ -1,26 +1,37 @@
-from typing import Literal
-
-from ninja import ModelSchema, Router
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from ninja import Router
 
 from .models import Article
+from .schemas import ArticleSchema, ArticleUpdateSchema, Status
 
 news_router = Router(tags=["News"])
 
 
-class ArticleSchema(ModelSchema):
-    class Meta:
-        model = Article
-        fields = ["id", "title", "content", "published_date", "archived_date"]
-
-
 @news_router.get("/articles", response=list[ArticleSchema])
-def list_articles(request, status: Literal["scheduled", "published", "archived"]):
+def list_articles(request, status: Status):
 
-    if status == "published":
-        articles = Article.published()
-    elif status == "scheduled":
+    if status == "scheduled":
         articles = Article.scheduled()
     elif status == "archived":
         articles = Article.archived()
+    else:
+        articles = Article.published()
 
     return articles
+
+
+@news_router.get("/articles/{id}", response=ArticleSchema)
+def get_article(request, id: int):
+    article = get_object_or_404(Article, pk=id)
+    return article
+
+
+@news_router.patch("/articles/{id}")
+def update_articles(request, id: int, body: ArticleUpdateSchema):
+    article = get_object_or_404(Article, pk=id)
+
+    article.archived_date = (
+        (article.archived_date or timezone.now()) if body.archived else None
+    )
+    article.save()

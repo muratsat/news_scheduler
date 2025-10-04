@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils import timezone
 
 from .models import Article
+from .schemas import Status
 
 # Register your models here.
 
@@ -11,6 +12,18 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = "__all__"
+
+    @staticmethod
+    def resolve_status(obj) -> Status:
+        now = timezone.now()
+
+        if now < obj.published_date:
+            return "scheduled"
+
+        if obj.archived_date is None or now <= obj.archived_date:
+            return "published"
+
+        return "archived"
 
 
 @admin.register(Article)
