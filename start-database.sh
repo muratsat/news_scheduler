@@ -25,10 +25,10 @@ if ! [ -x "$(command -v docker)" ] && ! [ -x "$(command -v podman)" ]; then
 fi
 
 # determine which docker command to use
-if [ -x "$(command -v docker)" ]; then
-  DOCKER_CMD="docker"
-elif [ -x "$(command -v podman)" ]; then
+if [ -x "$(command -v podman)" ]; then
   DOCKER_CMD="podman"
+elif [ -x "$(command -v docker)" ]; then
+  DOCKER_CMD="docker"
 fi
 
 if ! $DOCKER_CMD info > /dev/null 2>&1; then
