@@ -16,7 +16,12 @@
 # DJANGO_DB_HOST=localhost
 # DJANGO_DB_PORT=5432
 
-DB_CONTAINER_NAME="news-scheduler-db"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+BASE_NAME=$(basename "$SCRIPT_DIR")
+
+DB_CONTAINER_NAME="${BASE_NAME}_db"
+
 
 
 if ! [ -x "$(command -v docker)" ] && ! [ -x "$(command -v podman)" ]; then
